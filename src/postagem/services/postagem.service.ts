@@ -1,5 +1,10 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { Repository } from "typeorm";
+import { 
+    Injectable, 
+    InternalServerErrorException, 
+    Logger, 
+    NotFoundException 
+} from "@nestjs/common";
+import { DeleteResult, Repository } from "typeorm";
 import { Postagem } from "../entities/postagem.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -12,13 +17,104 @@ export class PostagemService {
         private readonly postagemRepository: Repository<Postagem>
     ) {}
 
-    async findAll(): Promise<Postagem[]> {
-    this.logger.log(`Buscando todas as postagens do banco de dados.`);
+    async create(postagem: Postagem): Promise<Postagem> {
+        this.logger.log('Criando uma nova postagem no banco de dados.');
 
-        return await this.postagemRepository.find();
+        try {
+            const createdPostagem = await this.postagemRepository.save(postagem);
+            this.logger.log(`Postagem com ID ${createdPostagem.id} criada com sucesso.`);
+
+            return createdPostagem;
+        } catch (error) {
+            this.logger.error('Erro ao criar postagem:', error.message);
+            throw new InternalServerErrorException('Erro ao criar postagem.');
+        }
     }
 
-    async create(postagem: Postagem): Promise<Postagem> {
-        return await this.postagemRepository.save(postagem);
+    async findAll(): Promise<Postagem[]> {
+    this.logger.log(`Buscando todas as postagens do banco de dados.`);
+        let posts: Postagem[] = [];
+        try {
+            posts = await this.postagemRepository.find();
+        } catch (error) {
+            this.logger.error('Erro ao buscar postagens:', error.message);
+            throw new InternalServerErrorException('Erro ao buscar postagens.');
+        }
+
+        if (posts.length === 0) {
+            this.logger.log('Nenhuma postagem encontrada no banco de dados.');
+        }
+
+        return posts;
+    }
+
+    async findById(id: number): Promise<Postagem> {
+        this.logger.log(`Buscando a postagem com ID ${id} no banco de dados.`);
+        let postagem: Postagem | null = null;
+
+        try {
+            postagem = await this.postagemRepository.findOneBy({ id });
+        } catch (error) {
+            this.logger.error(`Erro ao buscar postagem com ID ${id}:`, error.message);
+            throw new InternalServerErrorException('Erro ao buscar postagem por ID.');
+        }
+
+        if (!postagem) {
+            this.logger.warn(`Postagem com ID ${id} não encontrada.`);
+            throw new NotFoundException(`Postagem com ID ${id} não encontrada.`);
+        }
+
+        return postagem;
+    }
+
+    async findAllByTitulo(titulo: string): Promise<Postagem[]> {
+        this.logger.log(`Buscando postagens com título contendo '${titulo}'.`);
+        let posts: Postagem[] = [];
+
+        try {
+            posts = await this.postagemRepository
+                .createQueryBuilder('tb_postagem')
+                .where('tb_postagem.titulo LIKE :titulo', { titulo: `%${titulo}%` })
+                .getMany();
+        } catch (error) {
+            this.logger.error(`Erro ao buscar postagens com título '${titulo}':`, error.message);
+            throw new InternalServerErrorException('Erro ao buscar postagens por título.');
+        }
+
+        if (posts.length === 0) {
+            this.logger.log(`Nenhuma postagem encontrada com o título contendo '${titulo}'.`);
+        }
+
+        return posts;
+    }
+
+    async update(postagem: Postagem): Promise<Postagem> {
+        this.logger.log(`Atualizando a postagem com ID ${postagem.id}.`);
+
+        try {
+            await this.findById(postagem.id);
+            const updatedPostagem = await this.postagemRepository.save(postagem);
+            this.logger.log(`Postagem com ID ${postagem.id} atualizada com sucesso.`);
+
+            return updatedPostagem;
+        } catch (error) {
+            this.logger.error(`Erro ao atualizar postagem com ID ${postagem.id}:`, error.message);
+            throw new InternalServerErrorException('Erro ao atualizar postagem.');
+        }
+    }
+
+    async delete(id: number): Promise<DeleteResult> {
+        this.logger.log(`Excluindo a postagem com ID ${id}.`);
+
+        try {
+            const postagem = await this.findById(id);
+            const result = await this.postagemRepository.delete(postagem.id);
+            this.logger.log(`Postagem com ID ${id} excluída com sucesso.`);
+
+            return result;
+        } catch (error) {
+            this.logger.error(`Erro ao excluir postagem com ID ${id}:`, error.message);
+            throw new InternalServerErrorException('Erro ao excluir postagem.');
+        }
     }
 }

@@ -3,8 +3,10 @@ import {
     Entity, 
     PrimaryGeneratedColumn, 
     Column, 
-    UpdateDateColumn
+    UpdateDateColumn,
+    ManyToOne
 } from 'typeorm';
+import { Tema } from '../../tema/entities/tema.entity';
 
 @Entity({ name: 'tb_postagens' })
 export class Postagem {
@@ -22,4 +24,10 @@ export class Postagem {
   @UpdateDateColumn()
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   data: Date;
+
+  @ManyToOne(() => Tema, (tema) => tema.postagem, { 
+    eager: true,
+    onDelete: 'CASCADE'
+  })
+  tema: Tema;
 }

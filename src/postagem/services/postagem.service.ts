@@ -4,9 +4,10 @@ import {
     Logger, 
     NotFoundException 
 } from "@nestjs/common";
-import { DeleteResult, Repository } from "typeorm";
+import { DeleteResult, ILike, Repository } from "typeorm";
 import { Postagem } from "../entities/postagem.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { TemaService } from "../../tema/service/tema.service";
 
 @Injectable()
 export class PostagemService {
@@ -14,13 +15,15 @@ export class PostagemService {
 
     constructor(
         @InjectRepository(Postagem)
-        private readonly postagemRepository: Repository<Postagem>
+        private readonly postagemRepository: Repository<Postagem>,
+        private readonly temaService: TemaService,
     ) {}
 
     async create(postagem: Postagem): Promise<Postagem> {
         this.logger.log('Criando uma nova postagem no banco de dados.');
 
         try {
+            await this.temaService.findById(postagem.tema.id);
             const createdPostagem = await this.postagemRepository.save(postagem);
             this.logger.log(`Postagem com ID ${createdPostagem.id} criada com sucesso.`);
 
@@ -35,7 +38,9 @@ export class PostagemService {
     this.logger.log(`Buscando todas as postagens do banco de dados.`);
         let posts: Postagem[] = [];
         try {
-            posts = await this.postagemRepository.find();
+            posts = await this.postagemRepository.find({
+                relations: { tema: true }
+            });
         } catch (error) {
             this.logger.error('Erro ao buscar postagens:', error.message);
             throw new InternalServerErrorException('Erro ao buscar postagens.');
@@ -53,7 +58,10 @@ export class PostagemService {
         let postagem: Postagem | null = null;
 
         try {
-            postagem = await this.postagemRepository.findOneBy({ id });
+            postagem = await this.postagemRepository.findOne({
+                where: { id },
+                relations: { tema: true }
+             });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagem com ID ${id}:`, error.message);
             throw new InternalServerErrorException('Erro ao buscar postagem por ID.');
@@ -72,10 +80,12 @@ export class PostagemService {
         let posts: Postagem[] = [];
 
         try {
-            posts = await this.postagemRepository
-                .createQueryBuilder('tb_postagem')
-                .where('tb_postagem.titulo LIKE :titulo', { titulo: `%${titulo}%` })
-                .getMany();
+            posts = await this.postagemRepository.find({
+                where: {
+                    titulo: ILike(`%${titulo}%`)
+                },
+                relations: { tema: true }
+            });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagens com título '${titulo}':`, error.message);
             throw new InternalServerErrorException('Erro ao buscar postagens por título.');
@@ -93,6 +103,8 @@ export class PostagemService {
 
         try {
             await this.findById(postagem.id);
+            await this.temaService.findById(postagem.tema.id);
+
             const updatedPostagem = await this.postagemRepository.save(postagem);
             this.logger.log(`Postagem com ID ${postagem.id} atualizada com sucesso.`);
 

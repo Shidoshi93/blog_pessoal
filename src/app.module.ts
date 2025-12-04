@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostagemModule } from './postagem/postagem.module';
 import { Postagem } from './postagem/entities/postagem.entity';
+import { Tema } from './tema/entities/tema.entity';
+import { TemaModule } from './tema/tema.module';
 
 @Module({
   imports: [
@@ -21,10 +23,11 @@ import { Postagem } from './postagem/entities/postagem.entity';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         synchronize: configService.get<string>('NODE_ENV') === 'development',
-        entities: [Postagem],
+        entities: [Postagem, Tema],
       }),
     }),
     PostagemModule,
+    TemaModule,
   ],
   controllers: [],
   providers: [],

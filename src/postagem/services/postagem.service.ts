@@ -7,6 +7,7 @@ import {
 import { DeleteResult, ILike, Repository } from "typeorm";
 import { Postagem } from "../entities/postagem.entity";
 import { InjectRepository } from "@nestjs/typeorm";
+import { TemaService } from "../../tema/service/tema.service";
 
 @Injectable()
 export class PostagemService {
@@ -14,13 +15,15 @@ export class PostagemService {
 
     constructor(
         @InjectRepository(Postagem)
-        private readonly postagemRepository: Repository<Postagem>
+        private readonly postagemRepository: Repository<Postagem>,
+        private readonly temaService: TemaService,
     ) {}
 
     async create(postagem: Postagem): Promise<Postagem> {
         this.logger.log('Criando uma nova postagem no banco de dados.');
 
         try {
+            await this.temaService.findById(postagem.tema.id);
             const createdPostagem = await this.postagemRepository.save(postagem);
             this.logger.log(`Postagem com ID ${createdPostagem.id} criada com sucesso.`);
 
@@ -100,6 +103,8 @@ export class PostagemService {
 
         try {
             await this.findById(postagem.id);
+            await this.temaService.findById(postagem.tema.id);
+
             const updatedPostagem = await this.postagemRepository.save(postagem);
             this.logger.log(`Postagem com ID ${postagem.id} atualizada com sucesso.`);
 

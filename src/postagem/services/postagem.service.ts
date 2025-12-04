@@ -4,7 +4,7 @@ import {
     Logger, 
     NotFoundException 
 } from "@nestjs/common";
-import { DeleteResult, Repository } from "typeorm";
+import { DeleteResult, ILike, Repository } from "typeorm";
 import { Postagem } from "../entities/postagem.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -35,7 +35,9 @@ export class PostagemService {
     this.logger.log(`Buscando todas as postagens do banco de dados.`);
         let posts: Postagem[] = [];
         try {
-            posts = await this.postagemRepository.find();
+            posts = await this.postagemRepository.find({
+                relations: { tema: true }
+            });
         } catch (error) {
             this.logger.error('Erro ao buscar postagens:', error.message);
             throw new InternalServerErrorException('Erro ao buscar postagens.');
@@ -53,7 +55,10 @@ export class PostagemService {
         let postagem: Postagem | null = null;
 
         try {
-            postagem = await this.postagemRepository.findOneBy({ id });
+            postagem = await this.postagemRepository.findOne({
+                where: { id },
+                relations: { tema: true }
+             });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagem com ID ${id}:`, error.message);
             throw new InternalServerErrorException('Erro ao buscar postagem por ID.');
@@ -72,10 +77,12 @@ export class PostagemService {
         let posts: Postagem[] = [];
 
         try {
-            posts = await this.postagemRepository
-                .createQueryBuilder('tb_postagem')
-                .where('tb_postagem.titulo LIKE :titulo', { titulo: `%${titulo}%` })
-                .getMany();
+            posts = await this.postagemRepository.find({
+                where: {
+                    titulo: ILike(`%${titulo}%`)
+                },
+                relations: { tema: true }
+            });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagens com título '${titulo}':`, error.message);
             throw new InternalServerErrorException('Erro ao buscar postagens por título.');

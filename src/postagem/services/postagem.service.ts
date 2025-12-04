@@ -8,9 +8,10 @@ import { DeleteResult, ILike, Repository } from "typeorm";
 import { Postagem } from "../entities/postagem.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { TemaService } from "../../tema/service/tema.service";
+import { CrudRepositoryContract } from "../../common/interfaces/crudRepositoryContract";
 
 @Injectable()
-export class PostagemService {
+export class PostagemService implements CrudRepositoryContract<Postagem> {
     private readonly logger = new Logger(PostagemService.name);
 
     constructor(

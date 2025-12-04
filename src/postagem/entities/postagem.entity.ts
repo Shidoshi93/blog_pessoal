@@ -26,7 +26,6 @@ export class Postagem {
   data: Date;
 
   @ManyToOne(() => Tema, (tema) => tema.postagem, { 
-    eager: true,
     onDelete: 'CASCADE'
   })
   tema: Tema;

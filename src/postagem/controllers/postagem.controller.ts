@@ -53,4 +53,10 @@ export class PostagemController {
     async delete(@Param('id', ParseIntPipe) id: number) {
         await this.postagemService.delete(id);
     }
+
+    @Delete('/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteTeste(@Param('id', ParseIntPipe) id: number) {
+        await this.postagemService.delete(id);
+    }
 }

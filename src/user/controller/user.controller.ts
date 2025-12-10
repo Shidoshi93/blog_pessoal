@@ -4,7 +4,7 @@ import { User } from "../entities/user.entity";
 import { CrudRepositoryContract } from "../../common/interfaces/crudRepositoryContract";
 import { DeleteResult } from "typeorm";
 
-@Controller('tb_user')
+@Controller('user')
 export class UserController implements CrudRepositoryContract<User> {
     constructor(private readonly userService: UserService) {}
 

@@ -1,6 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Postagem } from "../../postagem/entities/postagem.entity";
+import { Exclude } from "class-transformer";
 
 @Entity('usuario')
 export class Usuario {
@@ -12,6 +13,7 @@ export class Usuario {
     username: string;
 
     @IsNotEmpty()
+    @Exclude() // This will exclude the password field when transforming the entity to JSON
     @Column({ nullable: false, length: 255 })
     password: string;
 

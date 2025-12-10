@@ -40,7 +40,10 @@ export class PostagemService implements CrudRepositoryContract<Postagem> {
         let posts: Postagem[] = [];
         try {
             posts = await this.postagemRepository.find({
-                relations: { tema: true }
+                relations: { 
+                    tema: true,
+                    usuario: true
+                }
             });
         } catch (error) {
             this.logger.error('Erro ao buscar postagens:', error.message);
@@ -61,7 +64,10 @@ export class PostagemService implements CrudRepositoryContract<Postagem> {
         try {
             postagem = await this.postagemRepository.findOne({
                 where: { id },
-                relations: { tema: true }
+                relations: { 
+                    tema: true,
+                    usuario: true
+                }
              });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagem com ID ${id}:`, error.message);
@@ -85,7 +91,10 @@ export class PostagemService implements CrudRepositoryContract<Postagem> {
                 where: {
                     titulo: ILike(`%${titulo}%`)
                 },
-                relations: { tema: true }
+                relations: { 
+                    tema: true,
+                    usuario: true
+                }
             });
         } catch (error) {
             this.logger.error(`Erro ao buscar postagens com título '${titulo}':`, error.message);

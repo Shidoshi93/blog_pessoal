@@ -1,25 +1,25 @@
 export class UsuarioLogin {
-    private usuario: string;
-    private senha: string;
+    private user: string;
+    private password: string;
 
-    constructor(usuario: string, senha: string) {
-        this.usuario = usuario;
-        this.senha = senha;
+    constructor(user: string, senha: string) {
+        this.user = user;
+        this.password = senha;
     }
 
-    public getUsuario(): string {
-        return this.usuario;
+    public getUser(): string {
+        return this.user;
     }
 
-    public setUsuario(usuario: string): void {
-        this.usuario = usuario;
+    public setUser(user: string): void {
+        this.user = user;
     }
 
-    public getSenha(): string {
-        return this.senha;
+    public getPassword(): string {
+        return this.password;
     }
 
-    public setSenha(senha: string): void {
-        this.senha = senha;
+    public setPassword(password: string): void {
+        this.password = password;
     }
 }

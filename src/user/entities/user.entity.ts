@@ -12,6 +12,8 @@ export class User {
     @Column({ unique: true, nullable: false, length: 255 })
     username: string;
 
+    // Password will be excluded only when transforming to plain object (e.g., in responses)
+    @Exclude({ toPlainOnly: true })
     @IsStrongPassword({
         minLength: 8, 
         minLowercase: 1, 

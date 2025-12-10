@@ -8,6 +8,7 @@ import { ThemeModule } from './theme/theme.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -35,6 +36,12 @@ import { User } from './user/entities/user.entity';
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // Enable ClassSerializerInterceptor globally because we are using @Exclude in User entity
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
 })
 export class AppModule {}

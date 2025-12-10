@@ -93,6 +93,29 @@ export class TemaService implements CrudRepositoryContract<Tema> {
         return temas;
     }
 
+    async findByTema(tema: string): Promise<Tema[]> {
+        this.logger.log(`Buscando temas com tema: ${tema}`);
+        let temas: Tema[] = [];
+        try {
+            temas = await this.temaRepository.find({
+                where: {
+                    tema: ILike(`%${tema}%`)
+                },
+                relations: { postagem: true }
+            });
+        } catch (error) {
+            this.logger.error(`Erro ao buscar temas com tema: ${tema}`, error.message);
+            throw new InternalServerErrorException('Erro ao buscar temas por tema.');
+        }
+
+        if (temas.length === 0) {
+            this.logger.log(`Nenhum tema encontrado com tema: ${tema}`);
+            throw new NotFoundException(`Nenhum tema encontrado com tema: ${tema}`);
+        }
+
+        return temas;
+    }
+
     async update(tema: Tema): Promise<Tema> {
         this.logger.log(`Atualizando tema com id: ${tema.id}`);
 

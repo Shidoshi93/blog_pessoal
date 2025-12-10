@@ -4,9 +4,11 @@ import {
     PrimaryGeneratedColumn, 
     Column, 
     UpdateDateColumn,
-    ManyToOne
+    ManyToOne,
+    CreateDateColumn
 } from 'typeorm';
 import { Tema } from '../../tema/entities/tema.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity({ name: 'tb_postagens' })
 export class Postagem {
@@ -21,12 +23,21 @@ export class Postagem {
   @Column({ length: 1000, nullable: false })
   texto: string;
 
+  @CreateDateColumn()
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
   @UpdateDateColumn()
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  data: Date;
+  updatedAt: Date;
 
   @ManyToOne(() => Tema, (tema) => tema.postagem, { 
     onDelete: 'CASCADE'
   })
   tema: Tema;
+
+  @ManyToOne(() => Usuario, (usuario) => usuario.postagem, {
+    onDelete: 'CASCADE'
+  })
+  usuario: Usuario;
 }

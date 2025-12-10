@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsEmail, IsNotEmpty, IsStrongPassword } from "class-validator";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Posts } from "../../posts/entities/posts.entity";
 import { Exclude } from "class-transformer";
@@ -12,11 +12,18 @@ export class User {
     @Column({ unique: true, nullable: false, length: 255 })
     username: string;
 
+    @IsStrongPassword({
+        minLength: 8, 
+        minLowercase: 1, 
+        minUppercase: 1, 
+        minNumbers: 1, 
+        minSymbols: 1 
+    })
     @IsNotEmpty()
-    @Exclude() // This will exclude the password field when transforming the entity to JSON
     @Column({ nullable: false, length: 255 })
     password: string;
 
+    @IsEmail()
     @IsNotEmpty()
     @Column({ unique: true, nullable: false, length: 255 })
     email: string;

@@ -8,7 +8,6 @@ import { ThemeModule } from './theme/theme.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/entities/user.entity';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -36,13 +35,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     AuthModule,
   ],
   controllers: [],
-  providers: [
-    // Global interceptor to handle class serialization
-    // I'm using ClassSerializerInterceptor to automatically exclude fields marked with @Exclude()
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

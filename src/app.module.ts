@@ -5,9 +5,9 @@ import { PostsModule } from './posts/posts.module';
 import { Posts } from './posts/entities/posts.entity';
 import { Theme } from './theme/entities/theme.entity';
 import { ThemeModule } from './theme/theme.module';
-import { UserModule } from './usuario/user.module';
+import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { User } from './usuario/entities/user.entity';
+import { User } from './user/entities/user.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({

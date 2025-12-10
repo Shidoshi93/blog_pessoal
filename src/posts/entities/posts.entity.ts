@@ -8,7 +8,7 @@ import {
     CreateDateColumn
 } from 'typeorm';
 import { Theme } from '../../theme/entities/theme.entity';
-import { User } from '../../usuario/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({ name: 'tb_posts' })
 export class Posts {

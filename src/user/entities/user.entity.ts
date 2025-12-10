@@ -1,10 +1,10 @@
 import { IsNotEmpty } from "class-validator";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Postagem } from "../../postagem/entities/postagem.entity";
+import { Posts } from "../../posts/entities/posts.entity";
 import { Exclude } from "class-transformer";
 
-@Entity('usuario')
-export class Usuario {
+@Entity('tb_user')
+export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -32,6 +32,6 @@ export class Usuario {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @OneToMany(() => Postagem, (postagem) => postagem.usuario)
-    postagem: Postagem[];
+    @OneToMany(() => Posts, (post) => post.user)
+    posts: Posts[];
 }

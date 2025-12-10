@@ -1,13 +1,13 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostagemModule } from './postagem/postagem.module';
-import { Postagem } from './postagem/entities/postagem.entity';
-import { Tema } from './tema/entities/tema.entity';
-import { TemaModule } from './tema/tema.module';
-import { UsuarioModule } from './usuario/usuario.module';
+import { PostsModule } from './posts/posts.module';
+import { Posts } from './posts/entities/posts.entity';
+import { Theme } from './theme/entities/theme.entity';
+import { ThemeModule } from './theme/theme.module';
+import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { Usuario } from './usuario/entities/usuario.entity';
+import { User } from './user/entities/user.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
@@ -27,12 +27,12 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         synchronize: configService.get<string>('NODE_ENV') === 'development',
-        entities: [Postagem, Tema, Usuario],
+        entities: [Posts, Theme, User],
       }),
     }),
-    PostagemModule,
-    TemaModule,
-    UsuarioModule,
+    PostsModule,
+    ThemeModule,
+    UserModule,
     AuthModule,
   ],
   controllers: [],

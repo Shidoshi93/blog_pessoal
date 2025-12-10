@@ -6,15 +6,13 @@ export class BcryptService {
 
     async hashPassword(password: string): Promise<string> {
         const saltRounds = 10;
-        let hashedPassword: string = '';
 
         try {
-            hashedPassword = await hash(password, saltRounds);
+         return await hash(password, saltRounds);
         } catch (error) {
             Logger.error('Error hashing password:', error);
             throw new InternalServerErrorException('Error hashing password');
         }
-        return hashedPassword;
     }
 
     async comparePassword(password: string, hashedPassword: string): Promise<boolean> {

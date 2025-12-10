@@ -7,21 +7,21 @@ import {
     ManyToOne,
     CreateDateColumn
 } from 'typeorm';
-import { Tema } from '../../tema/entities/tema.entity';
-import { Usuario } from '../../usuario/entities/usuario.entity';
+import { Theme } from '../../theme/entities/theme.entity';
+import { User } from '../../user/entities/user.entity';
 
-@Entity({ name: 'tb_postagens' })
-export class Postagem {
+@Entity({ name: 'tb_posts' })
+export class Posts {
   @PrimaryGeneratedColumn()
   id: number;
 
   @IsNotEmpty()
   @Column({ length: 100, nullable: false })
-  titulo: string;
+  title: string;
 
   @IsNotEmpty()
   @Column({ length: 1000, nullable: false })
-  texto: string;
+  text: string;
 
   @CreateDateColumn()
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
@@ -31,13 +31,13 @@ export class Postagem {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => Tema, (tema) => tema.postagem, { 
+  @ManyToOne(() => Theme, (theme) => theme.posts, { 
     onDelete: 'CASCADE'
   })
-  tema: Tema;
+  theme: Theme;
 
-  @ManyToOne(() => Usuario, (usuario) => usuario.postagem, {
+  @ManyToOne(() => User, (user) => user.posts, {
     onDelete: 'CASCADE'
   })
-  usuario: Usuario;
+  user: User;
 }

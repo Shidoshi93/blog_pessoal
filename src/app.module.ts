@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostagemModule } from './postagem/postagem.module';
@@ -8,6 +8,7 @@ import { TemaModule } from './tema/tema.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { Usuario } from './usuario/entities/usuario.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -35,6 +36,13 @@ import { Usuario } from './usuario/entities/usuario.entity';
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // Global interceptor to handle class serialization
+    // I'm using ClassSerializerInterceptor to automatically exclude fields marked with @Exclude()
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
 })
 export class AppModule {}

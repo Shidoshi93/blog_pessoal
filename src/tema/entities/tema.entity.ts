@@ -8,6 +8,10 @@ export class Tema {
     id: number;
 
     @IsNotEmpty()
+    @Column({ length: 100, nullable: false })
+    tema: string;
+
+    @IsNotEmpty()
     @Column({ length: 255, nullable: false })
     descricao: string;
 

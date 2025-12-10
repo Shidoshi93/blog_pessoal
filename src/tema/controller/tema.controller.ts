@@ -41,6 +41,12 @@ export class TemaController {
         return await this.temaService.findByDescricao(descricao);
     }
 
+    @Get('/tema/:tema')
+    @HttpCode(HttpStatus.OK)
+    async findByTema(@Param('tema') tema: string): Promise<Tema[]> {
+        return await this.temaService.findByTema(tema);
+    }
+
     @Put()
     @HttpCode(HttpStatus.OK)
     async update(@Body() tema: Tema): Promise<Tema> {

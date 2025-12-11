@@ -24,28 +24,48 @@ Uma API REST moderna e escalável para gerenciamento de postagens de blog, const
 
 ### 📝 Postagens
 - ✅ Criar postagens
-- ✅ Listar todas as postagens
-- ✅ Buscar postagem por ID
-- ✅ Buscar postagens por título
-- ✅ Atualizar postagens
-- ✅ Deletar postagens
+- ✅ Listar todas as postagens (protegido por JWT)
+- ✅ Buscar postagem por ID (protegido por JWT)
+- ✅ Buscar postagens por título (protegido por JWT)
+- ✅ Atualizar postagens (protegido por JWT)
+- ✅ Deletar postagens (protegido por JWT)
+
+### 👥 Usuários
+- ✅ Criar usuários (registro público)
+- ✅ Listar usuários (protegido por JWT)
+- ✅ Buscar usuário por ID (protegido por JWT)
+- ✅ Buscar usuários por email ou username (protegido por JWT)
+- ✅ Atualizar usuários (protegido por JWT)
+- ✅ Deletar usuários (protegido por JWT)
+- ✅ **Senhas nunca são retornadas nos responses** 🔐
 
 ### 🏷️ Temas
-- ✅ Criar temas
-- ✅ Listar todos os temas
-- ✅ Buscar tema por ID
-- ✅ Buscar temas por descrição
-- ✅ Atualizar temas
-- ✅ Deletar temas
+- ✅ Criar temas (protegido por JWT)
+- ✅ Listar todos os temas (protegido por JWT)
+- ✅ Buscar tema por ID (protegido por JWT)
+- ✅ Buscar temas por descrição (protegido por JWT)
+- ✅ Atualizar temas (protegido por JWT)
+- ✅ Deletar temas (protegido por JWT)
+
+### 🔐 Autenticação
+- ✅ Login com email e senha
+- ✅ Geração de JWT tokens
+- ✅ Validação de credenciais com bcrypt
+- ✅ Proteção de rotas com JWT Guard
+- ✅ Estratégia Local (email/password)
+- ✅ Estratégia JWT para rotas protegidas
 
 ### 🛠️ Recursos Gerais
 - ✅ Validação de dados com class-validator
-- ✅ Timestamps automáticos
+- ✅ Timestamps automáticos (createdAt, updatedAt)
 - ✅ CORS habilitado
 - ✅ Console estilizado e colorido
-- ✅ Tratamento de erros
+- ✅ Tratamento de erros type-safe
 - ✅ Integração com MySQL via TypeORM
-- ✅ Relacionamento entre entidades (Tema ↔ Postagens)
+- ✅ Relacionamento entre entidades (Tema ↔ Postagens ↔ Usuários)
+- ✅ ClassSerializerInterceptor para excluir senhas automaticamente
+- ✅ Senhas hasheadas com bcrypt
+- ✅ Validação de força de senha
 
 ## 🚀 Tecnologias
 
@@ -56,6 +76,10 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
 - **[TypeORM](https://typeorm.io/)** - ORM para TypeScript e JavaScript
 - **[MySQL](https://www.mysql.com/)** - Sistema de gerenciamento de banco de dados
 - **[Class Validator](https://github.com/typestack/class-validator)** - Validação baseada em decorators
+- **[Class Transformer](https://github.com/typestack/class-transformer)** - Transformação e exclusão de propriedades
+- **[JWT](https://jwt.io/)** - JSON Web Tokens para autenticação
+- **[Passport](http://www.passportjs.org/)** - Middleware de autenticação
+- **[Bcrypt](https://github.com/kelektiv/node.bcrypt.js)** - Hash seguro de senhas
 - **[Chalk](https://github.com/chalk/chalk)** - Estilização do terminal
 
 ## 📋 Pré-requisitos
@@ -90,11 +114,16 @@ PORT=4000
 NODE_ENV=development
 
 # Banco de Dados
+DB_TYPE=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_USER=seu_usuario
+DB_USERNAME=seu_usuario
 DB_PASSWORD=sua_senha
 DB_DATABASE=blog_pessoal
+
+# JWT
+JWT_SECRET=sua_chave_secreta_super_segura_aqui
+JWT_EXPIRES_IN=3600
 ```
 
 4. **Configure o banco de dados**
@@ -135,18 +164,168 @@ A API estará disponível em `http://localhost:4000`
 
 ---
 
+## 🔐 Autenticação
+
+### Como fazer login
+
+1. **Registre um novo usuário**
+```bash
+curl -X POST http://localhost:4000/user/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "username": "seu_usuario",
+    "email": "seu_email@example.com",
+    "password": "SenhaForte123!"
+  }'
+```
+
+2. **Faça login para obter o token JWT**
+```bash
+curl -X POST http://localhost:4000/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "email": "seu_email@example.com",
+    "password": "SenhaForte123!"
+  }'
+```
+
+Resposta:
+```json
+{
+  "username": "seu_usuario",
+  "id": 1,
+  "email": "seu_email@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+3. **Use o token para acessar rotas protegidas**
+```bash
+curl -X GET http://localhost:4000/user/ \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+```
+
+### 🔒 Segurança
+
+- ✅ Senhas são hasheadas com **bcrypt**
+- ✅ Senhas **nunca** são retornadas nos responses
+- ✅ JWT tokens com expiração configurável
+- ✅ Validação de força de senha obrigatória
+- ✅ Rotas sensíveis protegidas com JwtAuthGuard
+
+### 📊 Resumo dos Endpoints - Autenticação
+
+| Método | Endpoint      | Descrição              | Autenticação | Status |
+|--------|---------------|------------------------|--------------|--------|
+| POST   | `/auth/login` | Faz login e obtém token| ❌ Não | 200    |
+| POST   | `/user/`      | Cria novo usuário      | ❌ Não | 201    |
+| GET    | `/user/`      | Lista todos os usuários| ✅ Obrigatória | 200    |
+
+---
+
 <details>
 <summary><h2>📡 Endpoints da API</h2></summary>
+
+### **Autenticação**
+
+<details>
+  <summary>
+    <b>🔓 Fazer Login</b>
+  </summary>
+
+```http
+POST /auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SenhaForte123!"
+}
+```
+
+**Resposta (200 OK):**
+```json
+{
+  "username": "john_doe",
+  "id": 1,
+  "email": "user@example.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+</details>
+
+### **Usuários**
+
+<details>
+  <summary>
+    <b>📝 Criar Usuário (Registro)</b>
+  </summary>
+
+```http
+POST /user/
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "SenhaForte123!",
+  "photo": "https://example.com/photo.jpg"
+}
+```
+
+**Resposta (201 Created):**
+```json
+{
+  "id": 1,
+  "username": "john_doe",
+  "email": "john@example.com",
+  "photo": "https://example.com/photo.jpg",
+  "createdAt": "2025-12-11T10:30:00Z",
+  "updatedAt": "2025-12-11T10:30:00Z"
+}
+```
+
+</details>
+
+<details>
+  <summary>
+    <b>📋 Listar Usuários (Protegido)</b>
+  </summary>
+
+```http
+GET /user/
+Authorization: Bearer {token}
+```
+
+**Resposta (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "username": "john_doe",
+    "email": "john@example.com",
+    "photo": "https://example.com/photo.jpg",
+    "createdAt": "2025-12-11T10:30:00Z",
+    "updatedAt": "2025-12-11T10:30:00Z"
+  }
+]
+```
+
+> **Nota:** As senhas nunca aparecem nos responses!
+
+</details>
 
 ### **Postagens**
 
 <details>
   <summary>
-    <b>📋 Listar todas as postagens</b>
+    <b>📋 Listar todas as postagens (Protegido)</b>
   </summary>
 
 ```http
-GET /postagens
+GET /posts
+Authorization: Bearer {token}
 ```
 
 **Resposta de Sucesso (200)**
@@ -156,8 +335,9 @@ GET /postagens
     "id": 1,
     "titulo": "Minha primeira postagem",
     "texto": "Conteúdo da postagem...",
-    "data": "2025-12-02T12:00:00.000Z",
-    "tema": {
+    "createdAt": "2025-12-02T12:00:00.000Z",
+    "updatedAt": "2025-12-02T12:00:00.000Z",
+    "theme": {
       "id": 1,
       "descricao": "Tecnologia",
       "data": "2025-12-04T12:00:00.000Z"
@@ -367,24 +547,27 @@ No Content
 
 ### 📊 Resumo dos Endpoints - Postagens
 
-| Método | Endpoint                | Descrição                        | Status |
-|--------|-------------------------|----------------------------------|--------|
-| GET    | `/postagens`            | Lista todas as postagens         | 200    |
-| GET    | `/postagens/:id`        | Busca postagem por ID            | 200    |
-| GET    | `/postagens/titulo/:titulo` | Busca postagens por título   | 200    |
-| POST   | `/postagens`            | Cria nova postagem               | 200    |
-| PUT    | `/postagens`            | Atualiza postagem existente      | 200    |
-| DELETE | `/postagens/:id`        | Deleta postagem por ID           | 204    |
+| Método | Endpoint                | Descrição                        | Autenticação | Status |
+|--------|-------------------------|----------------------------------|--------------|--------|
+| GET    | `/posts`                | Lista todas as postagens         | ✅ Obrigatória | 200    |
+| GET    | `/posts/:id`            | Busca postagem por ID            | ✅ Obrigatória | 200    |
+| GET    | `/posts/titulo/:titulo` | Busca postagens por título       | ✅ Obrigatória | 200    |
+| POST   | `/posts`                | Cria nova postagem               | ✅ Obrigatória | 200    |
+| PUT    | `/posts`                | Atualiza postagem existente      | ✅ Obrigatória | 200    |
+| DELETE | `/posts/:id`            | Deleta postagem por ID           | ✅ Obrigatória | 204    |
 
 ---
 
-### **Temas**
+### **Temas** 🏷️ (Protegido 🔐)
+
+> **⚠️ Nota de Segurança**: Todos os endpoints de temas requerem autenticação JWT. Envie o token no header `Authorization: Bearer {token}`
 
 <details>
 <summary><b>📋 Listar todos os temas</b></summary>
 
 ```http
 GET /temas
+Authorization: Bearer {token}
 ```
 
 **Resposta de Sucesso (200)**
@@ -410,6 +593,7 @@ GET /temas
 
 ```http
 GET /temas/:id
+Authorization: Bearer {token}
 ```
 
 **Parâmetros**
@@ -418,6 +602,7 @@ GET /temas/:id
 **Exemplo**
 ```http
 GET /temas/1
+Authorization: Bearer {token}
 ```
 
 **Resposta de Sucesso (200)**
@@ -444,6 +629,7 @@ GET /temas/1
 
 ```http
 GET /temas/descricao/:descricao
+Authorization: Bearer {token}
 ```
 
 **Parâmetros**
@@ -452,6 +638,7 @@ GET /temas/descricao/:descricao
 **Exemplo**
 ```http
 GET /temas/descricao/Tecnologia
+Authorization: Bearer {token}
 ```
 
 **Resposta de Sucesso (200)**
@@ -473,6 +660,7 @@ GET /temas/descricao/Tecnologia
 ```http
 POST /temas
 Content-Type: application/json
+Authorization: Bearer {token}
 ```
 
 **Body**
@@ -502,6 +690,7 @@ Content-Type: application/json
 ```http
 PUT /temas
 Content-Type: application/json
+Authorization: Bearer {token}
 ```
 
 **Body**
@@ -530,6 +719,7 @@ Content-Type: application/json
 
 ```http
 DELETE /temas/:id
+Authorization: Bearer {token}
 ```
 
 **Parâmetros**
@@ -538,6 +728,7 @@ DELETE /temas/:id
 **Exemplo**
 ```http
 DELETE /temas/1
+Authorization: Bearer {token}
 ```
 
 **Resposta de Sucesso (204)**
@@ -559,14 +750,14 @@ No Content
 
 ### 📊 Resumo dos Endpoints - Temas
 
-| Método | Endpoint                | Descrição                        | Status |
-|--------|-------------------------|----------------------------------|--------|
-| GET    | `/temas`                | Lista todos os temas             | 200    |
-| GET    | `/temas/:id`            | Busca tema por ID                | 200    |
-| GET    | `/temas/descricao/:descricao` | Busca temas por descrição  | 200    |
-| POST   | `/temas`                | Cria novo tema                   | 200    |
-| PUT    | `/temas`                | Atualiza tema existente          | 200    |
-| DELETE | `/temas/:id`            | Deleta tema por ID               | 204    |
+| Método | Endpoint                | Descrição                        | Autenticação | Status |
+|--------|-------------------------|----------------------------------|--------------|--------|
+| GET    | `/temas`                | Lista todos os temas             | ✅ Obrigatória | 200    |
+| GET    | `/temas/:id`            | Busca tema por ID                | ✅ Obrigatória | 200    |
+| GET    | `/temas/descricao/:descricao` | Busca temas por descrição  | ✅ Obrigatória | 200    |
+| POST   | `/temas`                | Cria novo tema                   | ✅ Obrigatória | 200    |
+| PUT    | `/temas`                | Atualiza tema existente          | ✅ Obrigatória | 200    |
+| DELETE | `/temas/:id`            | Deleta tema por ID               | ✅ Obrigatória | 204    |
 
 </details>
 
@@ -579,12 +770,34 @@ No Content
 blog_pessoal/
 ├── src/
 │   ├── main.ts                      # Arquivo principal da aplicação
-│   ├── app.module.ts                # Módulo raiz
+│   ├── app.module.ts                # Módulo raiz (com ClassSerializerInterceptor)
 │   ├── app.service.ts               # Service principal
+│   ├── auth/                         # 🔐 Módulo de Autenticação
+│   │   ├── auth.module.ts           # Configuração JWT e estratégias
+│   │   ├── controller/
+│   │   │   └── auth.controller.ts   # Endpoint POST /auth/login
+│   │   ├── service/
+│   │   │   └── auth.service.ts      # Validação e geração JWT
+│   │   ├── strategies/
+│   │   │   ├── local.strategy.ts    # Estratégia de validação local
+│   │   │   └── jwt.strategy.ts      # Estratégia de validação JWT
+│   │   ├── guards/
+│   │   │   ├── local-auth.guard.ts  # Guard para login
+│   │   │   └── jwt-auth.guard.ts    # Guard para rotas protegidas
+│   │   └── dtos/
+│   │       └── login.dto.ts         # DTO para login
+│   ├── user/                         # 👥 Módulo de Usuários
+│   │   ├── user.module.ts           # Módulo de usuários
+│   │   ├── controller/
+│   │   │   └── user.controller.ts   # Endpoints de usuários
+│   │   ├── service/
+│   │   │   └── user.service.ts      # Lógica de usuários
+│   │   └── entities/
+│   │       └── user.entity.ts       # Entidade com @Exclude() na senha
 │   ├── postagem/
 │   │   ├── postagem.module.ts       # Módulo de postagens
 │   │   ├── controllers/
-│   │   │   └── postagem.controller.ts
+│   │   │   └── postagem.controller.ts # Endpoints protegidos
 │   │   ├── services/
 │   │   │   └── postagem.service.ts
 │   │   └── entities/
@@ -592,14 +805,16 @@ blog_pessoal/
 │   └── tema/
 │       ├── tema.module.ts           # Módulo de temas
 │       ├── controller/
-│       │   └── tema.controller.ts
+│       │   └── tema.controller.ts   # Endpoints protegidos
 │       ├── service/
 │       │   └── tema.service.ts
 │       └── entities/
 │           └── tema.entity.ts
-├── .env                              # Variáveis de ambiente
+├── .env                              # Variáveis de ambiente (JWT_SECRET, JWT_EXPIRES_IN)
+├── .env.example                      # Template de variáveis
 ├── package.json                      # Dependências do projeto
 ├── tsconfig.json                     # Configuração TypeScript
+├── eslint.config.mjs                 # Configuração ESLint (strict mode)
 └── nest-cli.json                     # Configuração NestJS
 ```
 
@@ -610,6 +825,18 @@ blog_pessoal/
 <details>
 <summary><h2>🗄️ Modelo de Dados</h2></summary>
 
+### Usuário (tb_usuarios) 👥
+
+| Campo    | Tipo      | Descrição                            |
+|----------|-----------|--------------------------------------|
+| id       | number    | Identificador único (PK)             |
+| username | string    | Nome de usuário (único)              |
+| email    | string    | Email (único)                        |
+| password | string    | Senha criptografada com bcrypt       |
+| data     | timestamp | Data de criação/atualização          |
+
+**Nota:** A senha nunca é retornada nas respostas de API, mesmo ao fazer login. Apenas o username, id, email e token são retornados.
+
 ### Postagem (tb_postagens)
 
 | Campo    | Tipo      | Descrição                    |
@@ -617,8 +844,9 @@ blog_pessoal/
 | id       | number    | Identificador único (PK)     |
 | titulo   | string    | Título da postagem (max 100) |
 | texto    | string    | Conteúdo (max 1000)          |
-| data     | timestamp | Data de criação/atualização  |
+| usuario  | Usuário   | Usuário que criou (FK)       |
 | tema     | Tema      | Tema relacionado (FK)        |
+| data     | timestamp | Data de criação/atualização  |
 
 ### Tema (tb_temas)
 
@@ -630,6 +858,8 @@ blog_pessoal/
 
 ### Relacionamentos
 
+- Um **Usuário** pode criar várias **Postagens** (One-to-Many)
+- Uma **Postagem** pertence a um **Usuário** (Many-to-One)
 - Um **Tema** pode ter várias **Postagens** (One-to-Many)
 - Uma **Postagem** pertence a um **Tema** (Many-to-One)
 - Ao deletar um **Tema**, todas as **Postagens** relacionadas são deletadas em cascata (CASCADE)
@@ -735,7 +965,21 @@ console.log('Postagem criada:', postagem);
 
 </details>
 
-## 📝 Licença
+## � Segurança
+
+### Boas Práticas Implementadas
+
+- **Senhas Criptografadas**: Todas as senhas são criptografadas com bcrypt e nunca são retornadas nas respostas de API
+- **JWT Seguro**: Tokens JWT com expiração de 1 hora, assinados com chave secreta do servidor
+- **Variáveis de Ambiente**: Chaves sensíveis (JWT_SECRET, credenciais DB) armazenadas em `.env` não versionado
+- **Validação de Entrada**: Todas as requisições são validadas com `class-validator`
+  - Emails validados com formato correto
+  - Senhas obrigadas ser fortes (mínimo 8 caracteres, maiúsculas, números, caracteres especiais)
+- **CORS Habilitado**: Requisições cross-origin controladas via variável `ENABLECORS`
+- **Proteção de Rotas**: Endpoints sensíveis protegidos com JWT usando `@UseGuards(JwtAuthGuard)`
+- **Type Safety**: TypeScript em modo strict com ESLint rigoroso para prevenir vulnerabilidades
+
+## �📝 Licença
 
 Este projeto está sob a licença UNLICENSED.
 

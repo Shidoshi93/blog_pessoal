@@ -8,7 +8,6 @@ import {
 import { UserService } from '../../user/service/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../bcrypt/bcrypt';
-import { Posts } from '../../posts/entities/posts.entity';
 import { User } from '../../user/entities/user.entity';
 import { LoginResponse, ValidateUserResponse } from '../types/auth.types';
 

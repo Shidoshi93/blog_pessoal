@@ -1,11 +1,11 @@
 import { IsNotEmpty } from 'class-validator';
-import { 
-    Entity, 
-    PrimaryGeneratedColumn, 
-    Column, 
-    UpdateDateColumn,
-    ManyToOne,
-    CreateDateColumn
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  UpdateDateColumn,
+  ManyToOne,
+  CreateDateColumn,
 } from 'typeorm';
 import { Theme } from '../../theme/entities/theme.entity';
 import { User } from '../../user/entities/user.entity';
@@ -31,13 +31,13 @@ export class Posts {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @ManyToOne(() => Theme, (theme) => theme.posts, { 
-    onDelete: 'CASCADE'
+  @ManyToOne(() => Theme, (theme) => theme.posts, {
+    onDelete: 'CASCADE',
   })
   theme: Theme;
 
   @ManyToOne(() => User, (user) => user.posts, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   user: User;
 }

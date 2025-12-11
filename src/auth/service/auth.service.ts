@@ -9,7 +9,7 @@ import { UserService } from '../../user/service/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../bcrypt/bcrypt';
 import { User } from '../../user/entities/user.entity';
-import { LoginResponse, ValidateUserResponse } from '../types/auth.types';
+import { LoginResponse, UserResponse } from '../types/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +24,7 @@ export class AuthService {
   async validateUser(
     email: string,
     password: string,
-  ): Promise<ValidateUserResponse> {
+  ): Promise<UserResponse> {
     this.logger.log(`Validating credentials for email: ${email}`);
     let user: User;
     let passwordMatch: boolean;

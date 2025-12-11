@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -17,7 +18,7 @@ export class UserService {
     @InjectRepository(User)
     private usuarioRepository: Repository<User>,
     private bcryptService: BcryptService,
-  ) {}
+  ) { }
 
   async findAll(): Promise<User[]> {
     this.logger.log('Fetching all users...');
@@ -88,6 +89,14 @@ export class UserService {
   async create(user: User): Promise<User> {
     this.logger.log('Creating new user...');
     try {
+      const userExists = await this.usuarioRepository.findOneBy({ email: user.email });
+      if (userExists) {
+        this.logger.warn(
+          `User creation failed. Email: ${user.email} already in use.`,
+        );
+        throw new BadRequestException('Email already in use');
+      }
+
       user.password = await this.bcryptService.hashPassword(user.password);
       const newUser = this.usuarioRepository.create(user);
       await this.usuarioRepository.save(newUser);

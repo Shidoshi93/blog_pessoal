@@ -48,7 +48,7 @@ export class UserController implements CrudRepositoryContract<User> {
     return await this.userService.findByUsername(username);
   }
 
-  @Post()
+  @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() usuario: User): Promise<User> {
     return await this.userService.create(usuario);

@@ -3,7 +3,7 @@ import { UserService } from "../service/user.service";
 import { User } from "../entities/user.entity";
 import { CrudRepositoryContract } from "../../common/interfaces/crudRepositoryContract";
 import { DeleteResult } from "typeorm";
-import { JwtAuthGuard } from "../../auth/guard/jwtAuth.guard";
+import { JwtAuthGuard } from "../../auth/guard/jwt-auth.guard";
 
 @Controller('user')
 export class UserController implements CrudRepositoryContract<User> {

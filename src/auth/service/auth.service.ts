@@ -10,23 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../bcrypt/bcrypt';
 import { Posts } from '../../posts/entities/posts.entity';
 import { User } from '../../user/entities/user.entity';
-
-export type ValidateUserResponse = {
-  id: number;
-  username: string;
-  email: string;
-  photo: string;
-  createdAt: Date;
-  updatedAt: Date;
-  posts: Posts[];
-};
-
-type LoginResponse = {
-  username: string;
-  id: number;
-  email: string;
-  token: string;
-};
+import { LoginResponse, ValidateUserResponse } from '../types/auth.types';
 
 @Injectable()
 export class AuthService {

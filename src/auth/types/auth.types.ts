@@ -1,6 +1,6 @@
 import { Posts } from '../../posts/entities/posts.entity';
 
-export type ValidateUserResponse = {
+export type UserResponse = {
   id: number;
   username: string;
   email: string;

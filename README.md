@@ -978,7 +978,41 @@ console.log('Postagem criada:', postagem);
 - **CORS Habilitado**: Requisições cross-origin controladas via variável `ENABLECORS`
 - **Proteção de Rotas**: Endpoints sensíveis protegidos com JWT usando `@UseGuards(JwtAuthGuard)`
 - **Type Safety**: TypeScript em modo strict com ESLint rigoroso para prevenir vulnerabilidades
+## 🧪 Testes
 
+### Rodando Testes Unitários
+
+```bash
+npm test
+```
+
+Roda todos os testes unitários encontrados em:
+- `/test/**/*.spec.ts`
+- `/src/**/*.spec.ts`
+
+### Rodando Testes E2E
+
+```bash
+npm run test:e2e
+```
+
+Roda testes end-to-end encontrados em `/test/**/*.e2e-spec.ts`
+
+### Watching Tests
+
+```bash
+npm run test:watch
+```
+
+Executa testes em modo watch, executando novamente a cada mudança nos arquivos.
+
+### Coverage
+
+```bash
+npm run test:cov
+```
+
+Gera relatório de cobertura de testes na pasta `/coverage`
 ## �📝 Licença
 
 Este projeto está sob a licença UNLICENSED.

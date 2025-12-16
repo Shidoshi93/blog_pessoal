@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger, INestApplication } from '@nestjs/common';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 const TIMEZONE: string = '-03:00';
 const ENABLECORS: boolean = true;
@@ -14,6 +15,18 @@ async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule, {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
+
+  const config = new DocumentBuilder()
+    .setTitle('Blog Pessoal API')
+    .setDescription('API do Blog Pessoal desenvolvida com NestJS')
+    .setContact('Daniel Silva', 'daniel.silva@example.com', 'Contato para suporte')
+    .setVersion('1.0')
+    .addTag('blog-pessoal')
+    .addBearerAuth()
+    .build();
+  // Swagger setup can be added here if needed
+
+  swaggerSetup(app);
 
   process.env.TZ = TIMEZONE;
 
@@ -34,6 +47,21 @@ bootstrap().catch((error) => {
   process.exit(1);
 });
 
+function swaggerSetup(app: INestApplication): void {
+  const config = new DocumentBuilder()
+    .setTitle('Blog Pessoal API')
+    .setDescription('API do Blog Pessoal desenvolvida com NestJS')
+    .setContact('Daniel Silva', 'daniel.silva@example.com', 'Contato para suporte')
+    .setVersion('1.0')
+    .addTag('blog-pessoal')
+    .addBearerAuth()
+    .build();
+  // Swagger setup can be added here if needed
+
+  const documetn = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/swagger', app, documetn);
+}
+
 function logStartupMessage(port: number) {
   const logger: Logger = new Logger('Startup');
 
@@ -42,8 +70,8 @@ function logStartupMessage(port: number) {
   );
   console.log(
     chalk.bold.cyan('║') +
-      chalk.bold.white('   🚀 SERVER STARTED SUCCESSFULLY! 🚀 ') +
-      chalk.bold.cyan('║'),
+    chalk.bold.white('   🚀 SERVER STARTED SUCCESSFULLY! 🚀 ') +
+    chalk.bold.cyan('║'),
   );
   console.log(
     chalk.bold.cyan('╚════════════════════════════════════════╝') + '\n',
@@ -51,38 +79,38 @@ function logStartupMessage(port: number) {
 
   console.log(
     chalk.bold.green('✓') +
-      chalk.white(' Application: ') +
-      chalk.bold.yellow('Blog Pessoal'),
+    chalk.white(' Application: ') +
+    chalk.bold.yellow('Blog Pessoal'),
   );
   console.log(
     chalk.bold.green('✓') + chalk.white(' Port: ') + chalk.bold.yellow(port),
   );
   console.log(
     chalk.bold.green('✓') +
-      chalk.white(' URL: ') +
-      chalk.bold.blue.underline(`${BASE_URL}${port}`),
+    chalk.white(' URL: ') +
+    chalk.bold.blue.underline(`${BASE_URL}${port}`),
   );
   console.log(
     chalk.bold.green('✓') +
-      chalk.white(' Environment: ') +
-      chalk.bold.magenta(process.env.NODE_ENV || 'development'),
+    chalk.white(' Environment: ') +
+    chalk.bold.magenta(process.env.NODE_ENV || 'development'),
   );
   console.log(
     chalk.bold.green('✓') +
-      chalk.white(' CORS: ') +
-      chalk.bold.green(ENABLECORS ? 'Enabled' : 'Disabled'),
+    chalk.white(' CORS: ') +
+    chalk.bold.green(ENABLECORS ? 'Enabled' : 'Disabled'),
   );
   console.log(
     chalk.bold.green('✓') +
-      chalk.white(' Timezone: ') +
-      chalk.bold.cyan(TIMEZONE),
+    chalk.white(' Timezone: ') +
+    chalk.bold.cyan(TIMEZONE),
   );
 
   console.log('\n' + chalk.gray('────────────────────────────────────────'));
   console.log(
     chalk.bold.white('  Press ') +
-      chalk.bold.red('CTRL+C') +
-      chalk.bold.white(' to stop the server'),
+    chalk.bold.red('CTRL+C') +
+    chalk.bold.white(' to stop the server'),
   );
   console.log(chalk.gray('────────────────────────────────────────') + '\n');
 

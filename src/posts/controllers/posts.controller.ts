@@ -12,20 +12,23 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '../services/posts.service';
-import { CrudRepositoryContract } from '../../common/interfaces/crudRepositoryContract';
 import { DeleteResult } from 'typeorm';
 import { Posts } from '../entities/posts.entity';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
+import { CreatePostDto, UpdatePostDto } from '../dtos';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Post')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('/post')
-export class PostsController implements CrudRepositoryContract<Posts> {
+export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  async create(@Body() newPost: Posts): Promise<Posts> {
-    return await this.postsService.create(newPost);
+  async create(@Body() createPostDto: CreatePostDto): Promise<Posts> {
+    return await this.postsService.create(createPostDto);
   }
 
   @Get()
@@ -46,10 +49,10 @@ export class PostsController implements CrudRepositoryContract<Posts> {
     return await this.postsService.fetchPostsByTitle(title);
   }
 
-  @Put()
+  @Put('/:id')
   @HttpCode(HttpStatus.OK)
-  async update(@Body() updatedPost: Posts): Promise<Posts> {
-    return await this.postsService.update(updatedPost);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updatePostDto: UpdatePostDto): Promise<Posts> {
+    return await this.postsService.update(id, updatePostDto);
   }
 
   @Delete('/:id')

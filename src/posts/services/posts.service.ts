@@ -8,10 +8,12 @@ import { DeleteResult, ILike, Repository } from 'typeorm';
 import { Posts } from '../entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ThemeService } from '../../theme/service/theme.service';
-import { CrudRepositoryContract } from '../../common/interfaces/crudRepositoryContract';
+import { CreatePostDto, UpdatePostDto } from '../dtos';
+import { Theme } from '../../theme/entities/theme.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
-export class PostsService implements CrudRepositoryContract<Posts> {
+export class PostsService {
   private readonly logger = new Logger(PostsService.name);
 
   constructor(
@@ -24,17 +26,26 @@ export class PostsService implements CrudRepositoryContract<Posts> {
     return error instanceof Error ? error.message : String(error);
   }
 
-  async create(post: Posts): Promise<Posts> {
+  async create(createPostDto: CreatePostDto): Promise<Posts> {
     this.logger.log('Creating a new post.');
 
     try {
-      await this.temaService.findById(post.theme.id);
-      const createdPostagem = await this.postsRepository.save(post);
+      // Validar tema
+      await this.temaService.findById(createPostDto.themeId);
+
+      // Construir objeto Posts para salvar
+      const newPost = new Posts();
+      newPost.title = createPostDto.title;
+      newPost.text = createPostDto.text;
+      newPost.theme = { id: createPostDto.themeId } as Theme;
+      newPost.user = { id: createPostDto.userId } as User;
+
+      const createdPost = await this.postsRepository.save(newPost);
       this.logger.log(
-        `Post with ID ${createdPostagem.id} created successfully.`,
+        `Post with ID ${createdPost.id} created successfully.`,
       );
 
-      return createdPostagem;
+      return createdPost;
     } catch (error: unknown) {
       this.logger.error('Error creating post:', this.getErrorMessage(error));
       throw new InternalServerErrorException('Error creating post.');
@@ -120,22 +131,40 @@ export class PostsService implements CrudRepositoryContract<Posts> {
     return posts;
   }
 
-  async update(post: Posts): Promise<Posts> {
-    this.logger.log(`Updating post with ID ${post.id}.`);
+  async update(id: number, updatePostDto: UpdatePostDto): Promise<Posts> {
+    this.logger.log(`Updating post with ID ${id}.`);
 
     try {
-      await this.findById(post.id);
-      await this.temaService.findById(post.theme.id);
+      // Buscar o post existente
+      const existingPost = await this.findById(id);
 
-      const updatedPost = await this.postsRepository.save(post);
-      this.logger.log(`Post with ID ${post.id} updated successfully.`);
+      // Validar tema se foi fornecido
+      if (updatePostDto.themeId) {
+        await this.temaService.findById(updatePostDto.themeId);
+      }
+
+      // Fazer merge dos campos fornecidos
+      const postToUpdate: Posts = {
+        ...existingPost,
+        ...(updatePostDto.title && { title: updatePostDto.title }),
+        ...(updatePostDto.text && { text: updatePostDto.text }),
+        ...(updatePostDto.themeId && { theme: { id: updatePostDto.themeId } as Theme })
+      };
+
+      const updatedPost = await this.postsRepository.save(postToUpdate);
+      this.logger.log(`Post with ID ${id} updated successfully.`);
 
       return updatedPost;
     } catch (error: unknown) {
       this.logger.error(
-        `Error updating post with ID ${post.id}:`,
+        `Error updating post with ID ${id}:`,
         this.getErrorMessage(error),
       );
+
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      
       throw new InternalServerErrorException('Error updating post.');
     }
   }

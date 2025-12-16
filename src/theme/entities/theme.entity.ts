@@ -8,28 +8,33 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Posts } from '../../posts/entities/posts.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('tb_theme')
 export class Theme {
+  @ApiProperty({ example: 1, description: 'Unique identifier for the theme' })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({ example: 'Nature', description: 'Name of the theme' })
   @IsNotEmpty()
   @Column({ length: 100, nullable: false })
   name: string;
 
+  @ApiProperty({ example: 'A theme related to nature and the environment', description: 'Description of the theme' })
   @IsNotEmpty()
   @Column({ length: 255, nullable: false })
   description: string;
 
+  @ApiProperty({ example: '2024-01-01T00:00:00Z', description: 'Date when the theme was created' })
   @CreateDateColumn()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
+  @ApiProperty({ example: '2024-01-02T00:00:00Z', description: 'Date when the theme was last updated' })
   @UpdateDateColumn()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
+  @ApiProperty({ type: () => [Posts], description: 'Posts associated with the theme' })
   @OneToMany(() => Posts, (post) => post.theme)
   posts: Posts[];
 }

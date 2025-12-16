@@ -15,7 +15,10 @@ import { User } from '../entities/user.entity';
 import { CrudRepositoryContract } from '../../common/interfaces/crudRepositoryContract';
 import { DeleteResult } from 'typeorm';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
+@ApiBearerAuth()
 @Controller('user')
 export class UserController implements CrudRepositoryContract<User> {
   constructor(private readonly userService: UserService) {}

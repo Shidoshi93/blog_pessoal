@@ -34,7 +34,7 @@ export class Theme {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty({ type: () => [Posts], description: 'Posts associated with the theme' })
+  @ApiProperty({ description: 'Posts associated with the theme' })
   @OneToMany(() => Posts, (post) => post.theme)
   posts: Posts[];
 }

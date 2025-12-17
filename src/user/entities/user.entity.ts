@@ -54,7 +54,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty({ type: () => [Posts], description: 'Posts created by the user' })
+  @ApiProperty({ description: 'Posts created by the user' })
   @OneToMany(() => Posts, (post) => post.user)
   posts: Posts[];
 }

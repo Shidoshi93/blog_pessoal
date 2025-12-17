@@ -41,7 +41,7 @@ export class Posts {
   })
   theme: Theme;
 
-  @ApiProperty({ type: () => User, description: 'User who created the post' })
+  @ApiProperty({ description: 'User who created the post' })
   @ManyToOne(() => User, (user) => user.posts, {
     onDelete: 'CASCADE',
   })

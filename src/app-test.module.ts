@@ -16,13 +16,13 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
-        type: 'sqlite' as const,
-        database: ':memory:',
-        entities: [Posts, Theme, User],
-        synchronize: true,
-        logging: false,
-        dropSchema: true,
-      }),
+      type: 'sqlite' as const,
+      database: ':memory:',
+      entities: [Posts, Theme, User],
+      synchronize: true,
+      logging: false,
+      dropSchema: true,
+    }),
     PostsModule,
     ThemeModule,
     UserModule,
@@ -37,4 +37,4 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     },
   ],
 })
-export class AppTestModule {}
+export class AppTestModule { }

@@ -16,7 +16,9 @@ import { Theme } from '../entities/theme.entity';
 import { CrudRepositoryContract } from '../../common/interfaces/crudRepositoryContract';
 import { DeleteResult } from 'typeorm';
 import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('/theme')
 export class ThemeController implements CrudRepositoryContract<Theme> {

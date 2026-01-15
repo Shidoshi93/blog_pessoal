@@ -16,18 +16,9 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('Blog Pessoal API')
-    .setDescription('API do Blog Pessoal desenvolvida com NestJS')
-    .setContact('Daniel Silva', 'daniel.silva@example.com', 'Contato para suporte')
-    .setVersion('1.0')
-    .addTag('blog-pessoal')
-    .addBearerAuth()
-    .build();
   // Swagger setup can be added here if needed
-
   swaggerSetup(app);
-
+  
   process.env.TZ = TIMEZONE;
 
   if (ENABLECORS) {
@@ -51,15 +42,15 @@ function swaggerSetup(app: INestApplication): void {
   const config = new DocumentBuilder()
     .setTitle('Blog Pessoal API')
     .setDescription('API do Blog Pessoal desenvolvida com NestJS')
-    .setContact('Daniel Silva', 'daniel.silva@example.com', 'Contato para suporte')
+    .setContact('Daniel Ribeiro', 'dann.ribeiroo@gmail.com', 'Contato para suporte')
     .setVersion('1.0')
     .addTag('blog-pessoal')
     .addBearerAuth()
     .build();
   // Swagger setup can be added here if needed
 
-  const documetn = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/swagger', app, documetn);
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('/swagger', app, document);
 }
 
 function logStartupMessage(port: number) {

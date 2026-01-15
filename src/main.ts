@@ -45,7 +45,6 @@ function swaggerSetup(app: INestApplication): void {
     .setContact('Daniel Ribeiro', 'dann.ribeiroo@gmail.com', 'Contato para suporte')
     .setVersion('1.0')
     .addTag('blog-pessoal')
-    .addBearerAuth()
     .build();
   // Swagger setup can be added here if needed
 

@@ -47,7 +47,6 @@ function swaggerSetup(app: INestApplication): void {
     .addTag('blog-pessoal')
     .addBearerAuth()
     .build();
-  // Swagger setup can be added here if needed
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/swagger', app, document);

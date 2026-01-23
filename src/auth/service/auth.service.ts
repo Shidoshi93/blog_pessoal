@@ -65,6 +65,9 @@ export class AuthService {
       id: user.id,
       email: user.email,
       token: `Bearer ${this.jwtService.sign({ id: user.id, username: user.username, email: user.email })}`,
+      photo: user.photo,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 }

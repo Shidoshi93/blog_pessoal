@@ -11,8 +11,11 @@ export type UserResponse = {
 };
 
 export type LoginResponse = {
-  username: string;
   id: number;
+  username: string;
   email: string;
   token: string;
+  photo: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
